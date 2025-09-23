@@ -1,4 +1,4 @@
-package edu.coursly.app;
+package edu.coursly.app.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
