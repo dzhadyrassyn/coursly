@@ -1,5 +1,6 @@
 package edu.coursly.app.model;
 
+import edu.coursly.app.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,9 +16,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String username;
 
     @ToString.Exclude
+    @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

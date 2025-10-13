@@ -1,3 +1,16 @@
 package edu.coursly.app.dto;
 
-public record UserRegistrationRequest(String username, String password) { }
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
+public class UserRegistrationRequest {
+
+    private String username;
+    private String password;
+}
