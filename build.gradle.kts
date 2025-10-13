@@ -25,21 +25,23 @@ repositories {
 }
 
 val mapstructVersion by extra("1.5.5.Final")
+val lombokMapStructBinding by extra("0.2.0")
 val jwtVersion by extra("0.11.5")
+val openAPIVersion by extra("2.2.0")
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${openAPIVersion}")
 	implementation("io.jsonwebtoken:jjwt-api:${jwtVersion}")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:${jwtVersion}")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jwtVersion}")
 
 	implementation("org.mapstruct:mapstruct:${mapstructVersion}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
-	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
-
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${lombokMapStructBinding}")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("com.h2database:h2")
 	annotationProcessor("org.projectlombok:lombok")
