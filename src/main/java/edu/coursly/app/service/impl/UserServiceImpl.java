@@ -28,15 +28,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerUser(UserRegistrationRequest userRegistrationRequest) {
         Objects.requireNonNull(userRegistrationRequest, "DTO is required");
-        Objects.requireNonNull(userRegistrationRequest.getUsername(), "username is required");
-        Objects.requireNonNull(userRegistrationRequest.getPassword(), "password is required");
+        Objects.requireNonNull(userRegistrationRequest.username(), "username is required");
+        Objects.requireNonNull(userRegistrationRequest.password(), "password is required");
 
-        if (userRepository.findByUsername(userRegistrationRequest.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(userRegistrationRequest.username()).isPresent()) {
             throw new UserAlreadyExistsException("Username is already registered");
         }
 
         User user = userMapper.toEntity(userRegistrationRequest);
-        user.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
+        user.setPassword(passwordEncoder.encode(userRegistrationRequest.password()));
         user.setRole(Role.ROLE_STUDENT);
         userRepository.save(user);
     }

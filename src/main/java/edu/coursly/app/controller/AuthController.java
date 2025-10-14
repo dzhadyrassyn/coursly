@@ -53,10 +53,7 @@ public class AuthController {
         String accessToken = jwtUtil.generateAccessToken(user.getUsername(), role);
         String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
 
-        return UserLoginResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return new UserLoginResponse(accessToken, refreshToken);
     }
 
     @PostMapping("/refresh")
@@ -72,10 +69,7 @@ public class AuthController {
         String role = user.getAuthorities().iterator().next().getAuthority();
         String newAccessToken = jwtUtil.generateAccessToken(username, role);
 
-        return UserLoginResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return new UserLoginResponse(newAccessToken, refreshToken);
     }
 
     @PostMapping("/register")
@@ -84,12 +78,9 @@ public class AuthController {
 
         userService.registerUser(userRegistrationRequest);
 
-        String accessToken = jwtUtil.generateAccessToken(userRegistrationRequest.getUsername(), Role.ROLE_STUDENT.name());
-        String refreshToken = jwtUtil.generateRefreshToken(userRegistrationRequest.getPassword());
+        String accessToken = jwtUtil.generateAccessToken(userRegistrationRequest.username(), Role.ROLE_STUDENT.name());
+        String refreshToken = jwtUtil.generateRefreshToken(userRegistrationRequest.username());
 
-        return UserLoginResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return new UserLoginResponse(accessToken, refreshToken);
     }
 }
