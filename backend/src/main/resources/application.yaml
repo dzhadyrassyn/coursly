@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: app
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+jwt:
+  secret: "3WQJcHo6Dz0Zx5XRK4pA09pUPN2oWWK1FC3O8p7DbWw1fE8PoD"
+  accessTokenExpirationMs: 900000 #15 minutes
+  refreshTokenExpirationMs: 604800000 # 7 days
