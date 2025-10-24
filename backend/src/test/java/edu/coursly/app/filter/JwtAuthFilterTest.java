@@ -1,11 +1,17 @@
 package edu.coursly.app.filter;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import edu.coursly.app.service.impl.CustomUserDetailsServiceImpl;
 import edu.coursly.app.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,35 +24,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-
 @ExtendWith(MockitoExtension.class)
 class JwtAuthFilterTest {
 
-    @InjectMocks
-    private JwtAuthFilter jwtAuthFilter;
+    @InjectMocks private JwtAuthFilter jwtAuthFilter;
 
-    @Mock
-    private JwtUtil jwtUtil;
+    @Mock private JwtUtil jwtUtil;
 
-    @Mock
-    private CustomUserDetailsServiceImpl userDetailsService;
+    @Mock private CustomUserDetailsServiceImpl userDetailsService;
 
-    @Mock
-    private FilterChain filterChain;
+    @Mock private FilterChain filterChain;
 
-    @Mock
-    private HttpServletRequest request;
+    @Mock private HttpServletRequest request;
 
-    @Mock
-    private HttpServletResponse response;
-
+    @Mock private HttpServletResponse response;
 
     @BeforeEach
     void setUp() {
@@ -57,11 +48,11 @@ class JwtAuthFilterTest {
     void shouldSetAuthenticationWhenValidTokenProvided() throws ServletException, IOException {
 
         // Given
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                "testuser",
-                "password",
-                List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))
-        );
+        UserDetails userDetails =
+                new org.springframework.security.core.userdetails.User(
+                        "testuser",
+                        "password",
+                        List.of(new SimpleGrantedAuthority("ROLE_STUDENT")));
 
         String token = "valid.jwt.token";
         String username = "testuser";

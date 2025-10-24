@@ -1,7 +1,10 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.5.5"
 	id("io.spring.dependency-management") version "1.1.7"
+	id("com.diffplug.spotless") version "6.25.0" apply false
 }
 
 group = "edu.coursly"
@@ -22,6 +25,15 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+apply(plugin = "com.diffplug.spotless")
+
+configure<SpotlessExtension> {
+	java {
+		googleJavaFormat("1.17.0").aosp()
+		target("src/**/*.java")
+	}
 }
 
 val mapstructVersion by extra("1.5.5.Final")

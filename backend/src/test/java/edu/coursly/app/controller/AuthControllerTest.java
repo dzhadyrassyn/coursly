@@ -1,5 +1,12 @@
 package edu.coursly.app.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.coursly.app.config.SecurityConfig;
 import edu.coursly.app.dto.UserLoginRequest;
@@ -7,6 +14,8 @@ import edu.coursly.app.dto.UserRegistrationRequest;
 import edu.coursly.app.service.UserService;
 import edu.coursly.app.service.impl.CustomUserDetailsServiceImpl;
 import edu.coursly.app.util.JwtUtil;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,34 +32,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
 class AuthControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @MockitoBean
-    private AuthenticationManager authManager;
+    @MockitoBean private AuthenticationManager authManager;
 
-    @MockitoBean
-    private JwtUtil jwtUtil;
+    @MockitoBean private JwtUtil jwtUtil;
 
-    @MockitoBean
-    private CustomUserDetailsServiceImpl userDetailsService;
+    @MockitoBean private CustomUserDetailsServiceImpl userDetailsService;
 
-    @MockitoBean
-    private UserService userService;
+    @MockitoBean private UserService userService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -60,18 +54,22 @@ class AuthControllerTest {
         String username = "john";
         String password = "secret";
 
-        UserDetails user = new User(username, password, List.of(new SimpleGrantedAuthority("ROLE_STUDENT")));
-        Authentication auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        UserDetails user =
+                new User(username, password, List.of(new SimpleGrantedAuthority("ROLE_STUDENT")));
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
         when(authManager.authenticate(any())).thenReturn(auth);
-        when(jwtUtil.generateAccessToken(eq(username), eq("ROLE_STUDENT"))).thenReturn("access-token");
+        when(jwtUtil.generateAccessToken(eq(username), eq("ROLE_STUDENT")))
+                .thenReturn("access-token");
         when(jwtUtil.generateRefreshToken(eq(username))).thenReturn("refresh-token");
 
         UserLoginRequest request = new UserLoginRequest(username, password);
 
-        mockMvc.perform(post("/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+        mockMvc.perform(
+                        post("/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
                 .andExpect(jsonPath("$.refreshToken").value("refresh-token"));
@@ -86,12 +84,19 @@ class AuthControllerTest {
         when(jwtUtil.validateToken(refreshToken)).thenReturn(true);
         when(jwtUtil.getUsernameFromToken(refreshToken)).thenReturn(username);
         when(userDetailsService.loadUserByUsername(username))
-                .thenReturn(new User(username, "password", List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
+                .thenReturn(
+                        new User(
+                                username,
+                                "password",
+                                List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
         when(jwtUtil.generateAccessToken(username, "ROLE_STUDENT")).thenReturn("new-access-token");
 
-        mockMvc.perform(post("/refresh")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("refreshToken", refreshToken))))
+        mockMvc.perform(
+                        post("/refresh")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(
+                                                Map.of("refreshToken", refreshToken))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value("new-access-token"))
                 .andExpect(jsonPath("$.refreshToken").value(refreshToken));
@@ -104,9 +109,12 @@ class AuthControllerTest {
 
         when(jwtUtil.validateToken(refreshToken)).thenReturn(false);
 
-        mockMvc.perform(post("/refresh")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("refreshToken", refreshToken))))
+        mockMvc.perform(
+                        post("/refresh")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(
+                                                Map.of("refreshToken", refreshToken))))
                 .andExpect(status().isBadRequest());
     }
 
@@ -122,9 +130,10 @@ class AuthControllerTest {
         when(jwtUtil.generateAccessToken(username, "ROLE_STUDENT")).thenReturn("access-token");
         when(jwtUtil.generateRefreshToken(username)).thenReturn("refresh-token");
 
-        mockMvc.perform(post("/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+        mockMvc.perform(
+                        post("/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
                 .andExpect(jsonPath("$.refreshToken").value("refresh-token"));

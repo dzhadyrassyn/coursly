@@ -8,6 +8,7 @@ import edu.coursly.app.model.enums.Role;
 import edu.coursly.app.service.UserService;
 import edu.coursly.app.service.impl.CustomUserDetailsServiceImpl;
 import edu.coursly.app.util.JwtUtil;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,8 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 public class AuthController {
@@ -32,8 +31,7 @@ public class AuthController {
             AuthenticationManager authManager,
             JwtUtil jwtUtil,
             CustomUserDetailsServiceImpl userDetailsService,
-            UserService userService
-    ) {
+            UserService userService) {
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
@@ -43,9 +41,10 @@ public class AuthController {
     @PostMapping("/login")
     public UserLoginResponse login(@RequestBody UserLoginRequest userLoginRequest) {
 
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginRequest.username(), userLoginRequest.password())
-        );
+        Authentication authentication =
+                authManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                userLoginRequest.username(), userLoginRequest.password()));
 
         UserDetails user = (UserDetails) authentication.getPrincipal();
         String role = user.getAuthorities().iterator().next().getAuthority();
@@ -74,11 +73,14 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserLoginResponse register(@RequestBody UserRegistrationRequest userRegistrationRequest) {
+    public UserLoginResponse register(
+            @RequestBody UserRegistrationRequest userRegistrationRequest) {
 
         userService.registerUser(userRegistrationRequest);
 
-        String accessToken = jwtUtil.generateAccessToken(userRegistrationRequest.username(), Role.ROLE_STUDENT.name());
+        String accessToken =
+                jwtUtil.generateAccessToken(
+                        userRegistrationRequest.username(), Role.ROLE_STUDENT.name());
         String refreshToken = jwtUtil.generateRefreshToken(userRegistrationRequest.username());
 
         return new UserLoginResponse(accessToken, refreshToken);

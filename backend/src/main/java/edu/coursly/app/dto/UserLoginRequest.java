@@ -1,3 +1,3 @@
 package edu.coursly.app.dto;
 
-public record UserLoginRequest(String username, String password) { }
+public record UserLoginRequest(String username, String password) {}

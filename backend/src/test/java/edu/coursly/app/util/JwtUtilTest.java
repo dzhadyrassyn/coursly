@@ -1,13 +1,12 @@
 package edu.coursly.app.util;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.jsonwebtoken.JwtException;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class JwtUtilTest {
 
@@ -18,9 +17,14 @@ class JwtUtilTest {
         jwtUtil = new JwtUtil();
 
         // Setup using test utility since @Value won't inject in unit tests
-        ReflectionTestUtils.setField(jwtUtil, "jwtSecret", "mySuperSecretKey12345678901234567890"); // Must be 32+ chars for HMAC
-        ReflectionTestUtils.setField(jwtUtil, "accessTokenExpirationMs", TimeUnit.MINUTES.toMillis(15));
-        ReflectionTestUtils.setField(jwtUtil, "refreshTokenExpirationMs", TimeUnit.DAYS.toMillis(7));
+        ReflectionTestUtils.setField(
+                jwtUtil,
+                "jwtSecret",
+                "mySuperSecretKey12345678901234567890"); // Must be 32+ chars for HMAC
+        ReflectionTestUtils.setField(
+                jwtUtil, "accessTokenExpirationMs", TimeUnit.MINUTES.toMillis(15));
+        ReflectionTestUtils.setField(
+                jwtUtil, "refreshTokenExpirationMs", TimeUnit.DAYS.toMillis(7));
     }
 
     @Test
