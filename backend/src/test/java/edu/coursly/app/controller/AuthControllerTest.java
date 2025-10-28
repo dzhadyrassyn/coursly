@@ -138,4 +138,32 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
                 .andExpect(jsonPath("$.refreshToken").value("refresh-token"));
     }
+
+    @Test
+    @DisplayName("Should return 400 when username and password are blank on login")
+    void loginValidationError() throws Exception {
+        var body = Map.of("username", "", "password", "");
+
+        mockMvc.perform(
+                        post("/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.username").value("Username is required"))
+                .andExpect(jsonPath("$.password").value("Password is required"));
+    }
+
+    @Test
+    @DisplayName("Should return 400 when username and password are blank on register")
+    void registerValidationError() throws Exception {
+        var body = Map.of("username", "", "password", "");
+
+        mockMvc.perform(
+                        post("/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.username").value("Username is required"))
+                .andExpect(jsonPath("$.password").value("Password is required"));
+    }
 }

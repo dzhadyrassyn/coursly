@@ -8,6 +8,7 @@ import edu.coursly.app.model.enums.Role;
 import edu.coursly.app.service.UserService;
 import edu.coursly.app.service.impl.CustomUserDetailsServiceImpl;
 import edu.coursly.app.util.JwtUtil;
+import jakarta.validation.Valid;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public UserLoginResponse login(@RequestBody UserLoginRequest userLoginRequest) {
+    public UserLoginResponse login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
 
         Authentication authentication =
                 authManager.authenticate(
@@ -74,7 +75,7 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserLoginResponse register(
-            @RequestBody UserRegistrationRequest userRegistrationRequest) {
+            @RequestBody @Valid UserRegistrationRequest userRegistrationRequest) {
 
         userService.registerUser(userRegistrationRequest);
 

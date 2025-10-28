@@ -46,6 +46,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${openAPIVersion}")
 	implementation("io.jsonwebtoken:jjwt-api:${jwtVersion}")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:${jwtVersion}")
