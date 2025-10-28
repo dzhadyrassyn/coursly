@@ -14,10 +14,11 @@
     margin-bottom: 1rem;
 }
 
-.form {
+form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    align-items: flex-start;
 }
 
 .input {
@@ -44,4 +45,15 @@
 .status {
     margin-top: 1rem;
     font-weight: 500;
+    text-align: left;
+    align-self: flex-start;
+}
+
+.error {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin: 4px 0 8px 0;
+    text-align: left;
+    align-self: flex-start;
+    width: 100%;
 }
