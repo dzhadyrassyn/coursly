@@ -51,8 +51,8 @@ class AuthControllerTest {
     @Test
     @DisplayName("POST /login should return access and refresh tokens")
     void testLogin() throws Exception {
-        String username = "john";
-        String password = "secret";
+        String username = "superboy";
+        String password = "topSecret";
 
         UserDetails user =
                 new User(username, password, List.of(new SimpleGrantedAuthority("ROLE_STUDENT")));
@@ -140,21 +140,21 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Should return 400 when username and password are blank on login")
+    @DisplayName("Should return 400 when username and password are less than required size on login")
     void loginValidationError() throws Exception {
-        var body = Map.of("username", "", "password", "");
+        var body = Map.of("username", "abc", "password", "abc");
 
         mockMvc.perform(
                         post("/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.username").value("Username is required"))
-                .andExpect(jsonPath("$.password").value("Password is required"));
+                .andExpect(jsonPath("$.username").value("Username must be at least 6 characters long"))
+                .andExpect(jsonPath("$.password").value("Password must be at least 8 characters long"));
     }
 
     @Test
-    @DisplayName("Should return 400 when username and password are blank on register")
+    @DisplayName("Should return 400 when username and password are less than required size on login")
     void registerValidationError() throws Exception {
         var body = Map.of("username", "", "password", "");
 
@@ -163,7 +163,7 @@ class AuthControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.username").value("Username is required"))
-                .andExpect(jsonPath("$.password").value("Password is required"));
+                .andExpect(jsonPath("$.username").value("Username must be at least 6 characters long"))
+                .andExpect(jsonPath("$.password").value("Password must be at least 8 characters long"));
     }
 }
