@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Size;
 
 public record UserRegistrationRequest(
         @NotNull(message = "Username is required")
-        @Size(min = 6, message = "Username must be at least 6 characters long")
-        String username,
+                @Size(min = 6, message = "Username must be at least 6 characters long")
+                String username,
         @NotNull(message = "Password is required")
-        @Size(min = 8, message = "Password must be at least 8 characters long")
-        String password) {}
+                @Size(min = 8, message = "Password must be at least 8 characters long")
+                String password) {}
