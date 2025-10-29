@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { register } from '../api/auth';
 import styles from '../styles/RegisterPage.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [status, setStatus] = useState('');
     const [errors, setErrors] = useState({ username: '', password: '' });
+    const navigate = useNavigate();
 
     const validate = () => {
         const newErrors = { username: '', password: '' };
@@ -43,6 +45,7 @@ export default function RegisterPage() {
             setUsername('');
             setPassword('');
             setErrors({ username: '', password: '' });
+            setTimeout(() => navigate('/success'), 1000);
         } catch (err) {
             setStatus('❌ ' + (err?.response?.data?.message || err.message));
         }
