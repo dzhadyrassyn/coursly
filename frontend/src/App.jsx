@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import IndexPage from './pages/IndexPage';
 import RegisterPage from './pages/RegisterPage';
-import SuccessPage from './pages/SuccessPage';
+import ChatPage from './pages/ChatPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -11,10 +11,10 @@ function App() {
                 <Route path="/" element={<IndexPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route
-                    path="/success"
+                    path="/chat"
                     element={
                         <ProtectedRoute>
-                            <SuccessPage />
+                            <ChatPage />
                         </ProtectedRoute>
                     }
                 />

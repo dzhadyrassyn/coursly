@@ -45,7 +45,7 @@ export default function RegisterPage() {
             setUsername('');
             setPassword('');
             setErrors({ username: '', password: '' });
-            setTimeout(() => navigate('/success'), 1000);
+            setTimeout(() => navigate('/chat'), 1000);
         } catch (err) {
             setStatus('❌ ' + (err?.response?.data?.message || err.message));
         }
