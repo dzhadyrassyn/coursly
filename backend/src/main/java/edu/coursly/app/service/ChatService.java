@@ -1,8 +1,9 @@
 package edu.coursly.app.service;
 
 import edu.coursly.app.dto.ChatRequest;
+import edu.coursly.app.dto.ChatResponse;
 
 public interface ChatService {
 
-    void sendMessage(ChatRequest message);
+    ChatResponse sendMessage(ChatRequest chatRequest);
 }

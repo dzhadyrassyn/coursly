@@ -1,6 +1,7 @@
 package edu.coursly.app.controller;
 
 import edu.coursly.app.dto.ChatRequest;
+import edu.coursly.app.dto.ChatResponse;
 import edu.coursly.app.service.ChatService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class ChatController {
     }
 
     @PostMapping
-    public void sendMessage(@Valid @RequestBody ChatRequest message) {
-        chatService.sendMessage(message);
+    public ChatResponse sendMessage(@Valid @RequestBody ChatRequest message) {
+        return chatService.sendMessage(message);
     }
 }
