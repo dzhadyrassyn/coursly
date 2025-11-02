@@ -19,6 +19,6 @@ jwt:
 
 cors:
   allowed:
-    origins: http://localhost:5173
+    origins: "http://localhost:5173"
     methods: "*"
     headers: "*"
