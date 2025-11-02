@@ -6,9 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/login': 'http://localhost:8080',
-      '/register': 'http://localhost:8080',
-      '/refresh': 'http://localhost:8080'
+      '/login': 'http://localhost:8080/api/v1/auth/login',
+      '/register': 'http://localhost:8080/api/v1/auth/register',
+      '/refresh': 'http://localhost:8080/api/v1/auth/refresh',
+      '/chat': 'http://localhost:8080/api/v1/chat'
     }
   }
 })
