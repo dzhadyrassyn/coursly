@@ -20,10 +20,13 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         return userRepository
                 .findByUsername(username)
-                .map(user -> org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
-                                .password(user.getPassword())
-                                .roles(user.getRole().name().replace("ROLE_", ""))
-                                .build())
+                .map(
+                        user ->
+                                org.springframework.security.core.userdetails.User.withUsername(
+                                                user.getUsername())
+                                        .password(user.getPassword())
+                                        .roles(user.getRole().name().replace("ROLE_", ""))
+                                        .build())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

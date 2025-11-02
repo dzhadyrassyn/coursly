@@ -7,11 +7,10 @@ import edu.coursly.app.model.User;
 import edu.coursly.app.model.enums.Role;
 import edu.coursly.app.repository.UserRepository;
 import edu.coursly.app.service.UserService;
+import java.util.Objects;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,14 +34,18 @@ public class UserServiceImpl implements UserService {
         Objects.requireNonNull(userRegistrationRequest.username(), "username is required");
         Objects.requireNonNull(userRegistrationRequest.password(), "password is required");
 
-        userRepository.findByUsername(userRegistrationRequest.username())
-                .ifPresentOrElse(u -> {
-                    throw new UserAlreadyExistsException("Username is already registered");
-                }, () -> {
-                    User user = userMapper.toEntity(userRegistrationRequest);
-                    user.setPassword(passwordEncoder.encode(userRegistrationRequest.password()));
-                    user.setRole(Role.ROLE_STUDENT);
-                    userRepository.save(user);
-                });
+        userRepository
+                .findByUsername(userRegistrationRequest.username())
+                .ifPresentOrElse(
+                        u -> {
+                            throw new UserAlreadyExistsException("Username is already registered");
+                        },
+                        () -> {
+                            User user = userMapper.toEntity(userRegistrationRequest);
+                            user.setPassword(
+                                    passwordEncoder.encode(userRegistrationRequest.password()));
+                            user.setRole(Role.ROLE_STUDENT);
+                            userRepository.save(user);
+                        });
     }
 }

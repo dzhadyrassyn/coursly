@@ -67,7 +67,7 @@ class AuthControllerTest {
         UserLoginRequest request = new UserLoginRequest(username, password);
 
         mockMvc.perform(
-                        post("/login")
+                        post(ApiPaths.API_V1_AUTH_LOGIN)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -92,7 +92,7 @@ class AuthControllerTest {
         when(jwtUtil.generateAccessToken(username, "ROLE_STUDENT")).thenReturn("new-access-token");
 
         mockMvc.perform(
-                        post("/refresh")
+                        post(ApiPaths.API_V1_AUTH_REFRESH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         objectMapper.writeValueAsString(
@@ -110,7 +110,7 @@ class AuthControllerTest {
         when(jwtUtil.validateToken(refreshToken)).thenReturn(false);
 
         mockMvc.perform(
-                        post("/refresh")
+                        post(ApiPaths.API_V1_AUTH_REFRESH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         objectMapper.writeValueAsString(
@@ -131,7 +131,7 @@ class AuthControllerTest {
         when(jwtUtil.generateRefreshToken(username)).thenReturn("refresh-token");
 
         mockMvc.perform(
-                        post("/register")
+                        post(ApiPaths.API_V1_AUTH_REGISTER)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -146,7 +146,7 @@ class AuthControllerTest {
         var body = Map.of("username", "abc", "password", "abc");
 
         mockMvc.perform(
-                        post("/login")
+                        post(ApiPaths.API_V1_AUTH_LOGIN)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
@@ -164,7 +164,7 @@ class AuthControllerTest {
         var body = Map.of("username", "", "password", "");
 
         mockMvc.perform(
-                        post("/register")
+                        post(ApiPaths.API_V1_AUTH_REGISTER)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
