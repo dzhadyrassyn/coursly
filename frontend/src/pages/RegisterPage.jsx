@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { register } from '../api/auth';
 import styles from '../styles/RegisterPage.module.css';
 import { useNavigate } from 'react-router-dom';
+import { validateCredentials } from '../utils/validation';
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
@@ -10,34 +11,10 @@ export default function RegisterPage() {
     const [errors, setErrors] = useState({ username: '', password: '' });
     const navigate = useNavigate();
 
-    const validate = () => {
-        const newErrors = { username: '', password: '' };
-        let isValid = true;
-
-        if (!username.trim()) {
-            newErrors.username = 'Username is required';
-            isValid = false;
-        } else if (username.length < 6) {
-            newErrors.username = 'Username must be at least 6 characters long';
-            isValid = false;
-        }
-
-        if (!password.trim()) {
-            newErrors.password = 'Password is required';
-            isValid = false;
-        } else if (password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters long';
-            isValid = false;
-        }
-
-        setErrors(newErrors);
-        return isValid;
-    };
-
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        if (!validate()) return;
+        if (!validateCredentials(username, password, setErrors)) return;
 
         try {
             await register(username, password);
