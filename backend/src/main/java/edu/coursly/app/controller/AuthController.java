@@ -9,18 +9,17 @@ import edu.coursly.app.service.UserService;
 import edu.coursly.app.service.impl.CustomUserDetailsServiceImpl;
 import edu.coursly.app.util.JwtUtil;
 import jakarta.validation.Valid;
-import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
+@RequestMapping(ApiPaths.API_V1_AUTH)
 public class AuthController {
 
     private final AuthenticationManager authManager;
@@ -39,7 +38,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
+    @PostMapping(ApiPaths.API_V1_AUTH_LOGIN)
     public UserLoginResponse login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
 
         Authentication authentication =
@@ -56,7 +55,7 @@ public class AuthController {
         return new UserLoginResponse(accessToken, refreshToken);
     }
 
-    @PostMapping("/refresh")
+    @PostMapping(ApiPaths.API_V1_AUTH_REFRESH)
     public UserLoginResponse refresh(@RequestBody Map<String, String> request) {
 
         String refreshToken = request.get("refreshToken");
@@ -72,7 +71,7 @@ public class AuthController {
         return new UserLoginResponse(newAccessToken, refreshToken);
     }
 
-    @PostMapping("/register")
+    @PostMapping(ApiPaths.API_V1_AUTH_REGISTER)
     @ResponseStatus(HttpStatus.CREATED)
     public UserLoginResponse register(
             @RequestBody @Valid UserRegistrationRequest userRegistrationRequest) {

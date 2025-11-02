@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api/chat")
+@RestController(ApiPaths.API_V1_CHAT)
 public class ChatController {
 
     private final ChatService chatService;

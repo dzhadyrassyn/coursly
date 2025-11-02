@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static edu.coursly.app.controller.ApiPaths.*;
+
 @Configuration
 public class SecurityConfig {
 
@@ -40,7 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth ->
-                                auth.requestMatchers("/login", "/register", "/refresh")
+                                auth.requestMatchers(API_V1_AUTH_LOGIN, API_V1_AUTH_REGISTER, API_V1_AUTH_REFRESH)
                                         .permitAll()
                                         .requestMatchers("/admin/**")
                                         .hasRole("ADMIN")
