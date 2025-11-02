@@ -1,25 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from '../styles/ChatPage.module.css';
 import Navbar from '../components/Navbar';
+import { useNavigate } from 'react-router-dom';
+import { sendChatMessage } from '../api/chat';
 
 export default function ChatPage() {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const chatEndRef = useRef(null);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
-
         const userMessage = { text: input, sender: 'user' };
         setMessages((prev) => [...prev, userMessage]);
         setInput('');
 
-        // Simulate AI response
-        const fakeAIResponse = { text: `Echo: ${input}`, sender: 'ai' };
-        setTimeout(() => {
-            setMessages((prev) => [...prev, fakeAIResponse]);
-        }, 500);
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                alert("You are not authenticated. Redirecting to login.");
+                navigate('/login');
+                return;
+            }
+
+            const aiResponseText = await sendChatMessage(input, accessToken);
+            const aiMessage = { text: aiResponseText, sender: 'ai' };
+            setMessages((prev) => [...prev, aiMessage]);
+
+        } catch (err) {
+            const errorMessage = { text: "❌ Error: " + err.message, sender: 'ai' };
+            setMessages((prev) => [...prev, errorMessage]);
+        }
     };
 
     // Auto-scroll to bottom
