@@ -18,7 +18,7 @@ export default function RegisterPage() {
             newErrors.username = 'Username is required';
             isValid = false;
         } else if (username.length < 6) {
-            newErrors.password = 'Username must be at least 6 characters long';
+            newErrors.username = 'Username must be at least 6 characters long';
             isValid = false;
         }
 
