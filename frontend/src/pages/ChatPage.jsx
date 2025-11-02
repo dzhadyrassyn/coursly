@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from '../styles/ChatPage.module.css';
+import Navbar from '../components/Navbar';
 
 export default function ChatPage() {
     const [messages, setMessages] = useState([]);
@@ -27,32 +28,33 @@ export default function ChatPage() {
     }, [messages]);
 
     return (
-        <div className={styles.container}>
-            <h1 className={styles.title}>AI Chat</h1>
-            <div className={styles.chatBox}>
-                {messages.map((msg, idx) => (
-                    <div
-                        key={idx}
-                        className={
-                            msg.sender === 'user'
-                                ? styles.userMsg
-                                : styles.aiMsg
-                        }
-                    >
-                        {msg.text}
-                    </div>
-                ))}
-                <div ref={chatEndRef} />
+        <>
+            <Navbar />
+            <div className={styles.container}>
+                <h1 className={styles.title}>AI Chat</h1>
+                <div className={styles.chatBox}>
+                    {messages.map((msg, idx) => (
+                        <div
+                            key={idx}
+                            className={
+                                msg.sender === 'user' ? styles.userMsg : styles.aiMsg
+                            }
+                        >
+                            {msg.text}
+                        </div>
+                    ))}
+                    <div ref={chatEndRef} />
+                </div>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <input
+                        className={styles.input}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Type your message..."
+                    />
+                    <button className={styles.button}>Send</button>
+                </form>
             </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <input
-                    className={styles.input}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Type your message..."
-                />
-                <button className={styles.button}>Send</button>
-            </form>
-        </div>
+        </>
     );
 }
