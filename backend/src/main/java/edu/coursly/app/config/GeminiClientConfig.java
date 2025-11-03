@@ -9,6 +9,7 @@ public class GeminiClientConfig {
 
     @Bean
     public Client geminiClient() {
-        return new Client(); // The client gets the API key from the environment variable `GOOGLE_API_KEY`
+        return new Client(); // The client gets the API key from the environment variable
+        // `GOOGLE_API_KEY`
     }
 }

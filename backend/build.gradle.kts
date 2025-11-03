@@ -70,4 +70,5 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	environment("GOOGLE_API_KEY", System.getenv("GOOGLE_API_KEY") ?: "my-secret-key")
 }

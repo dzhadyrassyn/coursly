@@ -18,8 +18,7 @@ public class GeminiAIServiceImpl implements AIService {
     public String sendMessage(String message) {
 
         GenerateContentResponse response =
-                geminiClient.models.generateContent(
-                        "gemini-2.5-flash", message, null);
+                geminiClient.models.generateContent("gemini-2.5-flash", message, null);
 
         return response.text();
     }

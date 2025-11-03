@@ -22,7 +22,3 @@ cors:
     origins: "http://localhost:5173"
     methods: "*"
     headers: "*"
-
-google:
-  api:
-    key: my-secret-key
