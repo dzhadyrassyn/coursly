@@ -40,6 +40,8 @@ val mapstructVersion by extra("1.5.5.Final")
 val lombokMapStructBinding by extra("0.2.0")
 val jwtVersion by extra("0.11.5")
 val openAPIVersion by extra("2.2.0")
+val genaiVersion by extra("1.0.0")
+val httpclientVersion by extra("4.5.13")
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -57,6 +59,10 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${lombokMapStructBinding}")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("com.h2database:h2")
+
+	implementation("com.google.genai:google-genai:${genaiVersion}")
+	implementation("org.apache.httpcomponents:httpclient:${httpclientVersion}")
+
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
