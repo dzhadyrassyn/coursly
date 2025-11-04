@@ -8,6 +8,12 @@ export async function sendChatMessage(message, accessToken) {
         body: JSON.stringify({ message })
     });
 
+    if (response.status === 403) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        throw new Error('FORBIDDEN');
+    }
+
     if (!response.ok) {
         const error = await response.text();
         throw new Error(error || 'Failed to fetch chat response');

@@ -34,6 +34,11 @@ export default function ChatPage() {
             setMessages((prev) => [...prev, aiMessage]);
 
         } catch (err) {
+            if (err.message === 'FORBIDDEN') {
+                alert('Session expired. Please log in again.');
+                navigate('/');
+            }
+
             const errorMessage = { text: "❌ Error: " + err.message, sender: 'ai' };
             setMessages((prev) => [...prev, errorMessage]);
         }
