@@ -58,7 +58,7 @@ dependencies {
 	annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${lombokMapStructBinding}")
 	compileOnly("org.projectlombok:lombok")
-	runtimeOnly("com.h2database:h2")
+	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("com.google.genai:google-genai:${genaiVersion}")
 	implementation("org.apache.httpcomponents:httpclient:${httpclientVersion}")

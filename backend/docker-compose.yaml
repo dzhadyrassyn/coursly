@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16
+    container_name: coursly-postgres
+    environment:
+      POSTGRES_DB: coursly
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
