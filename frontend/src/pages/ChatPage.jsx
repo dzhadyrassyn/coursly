@@ -4,6 +4,11 @@ import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import { sendChatMessage } from '../api/chat';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github.css';
+
 export default function ChatPage() {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -52,7 +57,16 @@ export default function ChatPage() {
                                 msg.sender === 'user' ? styles.userMsg : styles.aiMsg
                             }
                         >
-                            {msg.text}
+                            {msg.sender === 'ai' ? (
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeHighlight]}
+                                >
+                                    {msg.text}
+                                </ReactMarkdown>
+                            ) : (
+                                msg.text
+                            )}
                         </div>
                     ))}
                     <div ref={chatEndRef} />
