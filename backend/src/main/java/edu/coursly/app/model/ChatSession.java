@@ -1,10 +1,13 @@
 package edu.coursly.app.model;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Data
@@ -20,4 +23,16 @@ public class ChatSession {
 
     @Column(name = "title")
     private String title;
+
+    @Column(name = "created")
+    @CreationTimestamp
+    private Instant created;
+
+    @Column(name = "last_modified")
+    @UpdateTimestamp
+    private Instant lastModified;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    private User user;
 }
