@@ -8,6 +8,8 @@ import edu.coursly.app.model.enums.Role;
 import edu.coursly.app.repository.UserRepository;
 import edu.coursly.app.service.UserService;
 import java.util.Objects;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,5 +49,14 @@ public class UserServiceImpl implements UserService {
                             user.setRole(Role.ROLE_STUDENT);
                             userRepository.save(user);
                         });
+    }
+
+    @Override
+    public User getCurrentUser() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 }

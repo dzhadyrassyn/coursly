@@ -1,3 +1,3 @@
 package edu.coursly.app.dto;
 
-public record ChatResponse(String message) {}
+public record ChatResponse(String message, Long chatSessionId) {}
