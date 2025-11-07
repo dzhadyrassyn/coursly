@@ -12,4 +12,5 @@ public final class ApiPaths {
     public static final String API_V1_AUTH_REFRESH = API_V1_AUTH + "/refresh";
 
     public static final String API_V1_CHAT = API_V1 + "/chat";
+    public static final String API_V1_CHAT_SESSIONS = API_V1_CHAT + "/sessions";
 }
