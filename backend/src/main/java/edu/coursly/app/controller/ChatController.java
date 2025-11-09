@@ -1,15 +1,14 @@
 package edu.coursly.app.controller;
 
+import edu.coursly.app.dto.ChatMessageResponse;
 import edu.coursly.app.dto.ChatRequest;
 import edu.coursly.app.dto.ChatResponse;
 import edu.coursly.app.dto.ChatSessionResponse;
 import edu.coursly.app.service.ChatService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ChatController {
@@ -28,5 +27,11 @@ public class ChatController {
     @GetMapping(ApiPaths.API_V1_CHAT_SESSIONS)
     public List<ChatSessionResponse> retrieveUserChatSessions() {
         return chatService.retrieveUserChatSessions();
+    }
+
+    @GetMapping(ApiPaths.API_V1_CHAT_MESSAGES)
+    public List<ChatMessageResponse> retrieveUserChatSessionMessages(
+            @PathVariable @NotNull Long id) {
+        return chatService.retrieveUserChatSessionMessages(id);
     }
 }

@@ -2,9 +2,13 @@ package edu.coursly.app.service.impl;
 
 import edu.coursly.app.model.ChatMessage;
 import edu.coursly.app.model.ChatSession;
+import edu.coursly.app.model.User;
 import edu.coursly.app.model.enums.MessageSenderType;
 import edu.coursly.app.repository.ChatMessageRepository;
 import edu.coursly.app.service.ChatMessageService;
+import java.util.List;
+import java.util.Objects;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +21,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public ChatMessage saveUserMessage(String content, ChatSession session) {
+    public void saveUserMessage(String content, ChatSession session) {
+
         ChatMessage message =
                 ChatMessage.builder()
                         .content(content)
@@ -25,11 +30,12 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                         .sender(MessageSenderType.USER)
                         .build();
 
-        return chatMessageRepository.save(message);
+        chatMessageRepository.save(message);
     }
 
     @Override
-    public ChatMessage saveAIMessage(String content, ChatSession session) {
+    public void saveAIMessage(String content, ChatSession session) {
+
         ChatMessage message =
                 ChatMessage.builder()
                         .content(content)
@@ -37,6 +43,20 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                         .sender(MessageSenderType.AI)
                         .build();
 
-        return chatMessageRepository.save(message);
+        chatMessageRepository.save(message);
+    }
+
+    @Override
+    public List<ChatMessage> retrieveMessages(Long chatSessionId, User user) {
+
+        List<ChatMessage> messages =
+                chatMessageRepository.findAllByChatSession_IdOrderByCreatedAsc(chatSessionId);
+        if (!messages.isEmpty()
+                && !Objects.equals(
+                        messages.getFirst().getChatSession().getUser().getId(), user.getId())) {
+            throw new AccessDeniedException("You do not have access to this chat session");
+        }
+
+        return messages;
     }
 }
