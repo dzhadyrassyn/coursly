@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.coursly.app.dto.ChatMessageResponse;
 import edu.coursly.app.dto.ChatRequest;
 import edu.coursly.app.dto.ChatResponse;
 import edu.coursly.app.dto.ChatSessionResponse;
@@ -94,6 +95,63 @@ class ChatControllerTest {
 
         // when + then
         mockMvc.perform(get(ApiPaths.API_V1_CHAT_SESSIONS).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
+    @DisplayName("Should return list of chat messages for given session ID (HTTP 200)")
+    void retrieveUserChatSessionMessages_success() throws Exception {
+        // given
+        Long sessionId = 1L;
+        ChatMessageResponse msg1 =
+                new ChatMessageResponse(
+                        101L,
+                        "Hi",
+                        "USER",
+                        Instant.parse("2025-11-03T10:00:00Z"),
+                        Instant.parse("2025-11-03T10:00:01Z"),
+                        sessionId);
+
+        ChatMessageResponse msg2 =
+                new ChatMessageResponse(
+                        102L,
+                        "Hello there!",
+                        "AI",
+                        Instant.parse("2025-11-03T10:00:02Z"),
+                        Instant.parse("2025-11-03T10:00:03Z"),
+                        sessionId);
+
+        when(chatService.retrieveUserChatSessionMessages(sessionId))
+                .thenReturn(List.of(msg1, msg2));
+
+        // when + then
+        mockMvc.perform(
+                        get(ApiPaths.API_V1_CHAT_MESSAGES, sessionId)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].messageId").value(101L))
+                .andExpect(jsonPath("$[0].message").value("Hi"))
+                .andExpect(jsonPath("$[0].sender").value("USER"))
+                .andExpect(jsonPath("$[0].chatSessionId").value(sessionId))
+                .andExpect(jsonPath("$[1].messageId").value(102L))
+                .andExpect(jsonPath("$[1].message").value("Hello there!"))
+                .andExpect(jsonPath("$[1].sender").value("AI"))
+                .andExpect(jsonPath("$[1].chatSessionId").value(sessionId));
+    }
+
+    @Test
+    @DisplayName("Should return empty list when no messages found (HTTP 200)")
+    void retrieveUserChatSessionMessages_empty() throws Exception {
+        // given
+        Long sessionId = 42L;
+        when(chatService.retrieveUserChatSessionMessages(sessionId)).thenReturn(List.of());
+
+        // when + then
+        mockMvc.perform(
+                        get(ApiPaths.API_V1_CHAT_MESSAGES, sessionId)
+                                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
     }
