@@ -1,10 +1,8 @@
 package edu.coursly.app;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class AppTests {
+class AppTests extends BaseIntegrationTest {
 
     @Test
     void contextLoads() {}

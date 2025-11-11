@@ -42,6 +42,7 @@ val jwtVersion by extra("0.11.5")
 val openAPIVersion by extra("2.2.0")
 val genaiVersion by extra("1.0.0")
 val httpclientVersion by extra("4.5.13")
+val postgresTestContainerVersion by extra("1.20.1")
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -66,6 +67,9 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	testImplementation("org.testcontainers:junit-jupiter:${postgresTestContainerVersion}")
+	testImplementation("org.testcontainers:postgresql:${postgresTestContainerVersion}")
 }
 
 tasks.withType<Test> {
