@@ -1,90 +1,164 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from '../styles/ChatPage.module.css';
+import { getChatSessions, getChatMessages, sendChatMessage } from '../api/chat';
+import ReactMarkdown from 'react-markdown';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
-import { sendChatMessage } from '../api/chat';
-
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/github.css';
 
 export default function ChatPage() {
+    const [sessions, setSessions] = useState([]);
+    const [selectedSession, setSelectedSession] = useState(null);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const chatEndRef = useRef(null);
     const navigate = useNavigate();
+    const accessToken = localStorage.getItem('accessToken');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const userMessage = { text: input, sender: 'user' };
-        setMessages((prev) => [...prev, userMessage]);
-        setInput('');
-
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                alert("You are not authenticated. Redirecting to login.");
-                navigate('/login');
-                return;
+    // Load chat sessions
+    useEffect(() => {
+        async function fetchSessions() {
+            try {
+                const data = await getChatSessions(accessToken);
+                setSessions(data);
+            } catch (err) {
+                if (err.message === 'FORBIDDEN') navigate('/');
+                else console.error('Failed to fetch sessions:', err);
             }
-
-            const aiResponseText = await sendChatMessage(input, accessToken);
-            const aiMessage = { text: aiResponseText, sender: 'ai' };
-            setMessages((prev) => [...prev, aiMessage]);
-
-        } catch (err) {
-            if (err.message === 'FORBIDDEN') {
-                alert('Session expired. Please log in again.');
-                navigate('/');
-            }
-
-            const errorMessage = { text: "❌ Error: " + err.message, sender: 'ai' };
-            setMessages((prev) => [...prev, errorMessage]);
         }
-    };
+        fetchSessions();
+    }, [accessToken, navigate]);
 
-    // Auto-scroll to bottom
+    // Load messages for selected session
+    useEffect(() => {
+        if (!selectedSession) {
+            setMessages([]);
+            return;
+        }
+
+        async function fetchMessages() {
+            try {
+                const data = await getChatMessages(selectedSession.chatSessionId, accessToken);
+                setMessages(data);
+            } catch (err) {
+                if (err.message === 'FORBIDDEN') navigate('/');
+                else console.error('Failed to fetch messages:', err);
+            }
+        }
+        fetchMessages();
+    }, [selectedSession, accessToken, navigate]);
+
+    // Auto-scroll chat
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+
+        const userMessage = {
+            messageId: Date.now(),
+            message: input,
+            sender: 'USER',
+        };
+        setMessages((prev) => [...prev, userMessage]);
+        setInput('');
+
+        try {
+            // Create or continue chat session
+            const sessionId = selectedSession?.chatSessionId ?? null;
+            const response = await sendChatMessage(input, sessionId, accessToken);
+
+            // Update session list if new one created
+            if (!selectedSession) {
+                const updatedSessions = await getChatSessions(accessToken);
+                setSessions(updatedSessions);
+                const newSession = updatedSessions.find(
+                    (s) => s.chatSessionId === response.chatSessionId
+                );
+                setSelectedSession(newSession);
+            }
+
+            const aiMessage = {
+                messageId: Date.now() + 1,
+                message: response.message,
+                sender: 'AI',
+            };
+            setMessages((prev) => [...prev, aiMessage]);
+        } catch (err) {
+            if (err.message === 'FORBIDDEN') {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                navigate('/');
+            } else {
+                console.error('Error sending message:', err);
+            }
+        }
+    };
+
     return (
         <>
             <Navbar />
-            <div className={styles.container}>
-                <h1 className={styles.title}>AI Chat</h1>
-                <div className={styles.chatBox}>
-                    {messages.map((msg, idx) => (
-                        <div
-                            key={idx}
-                            className={
-                                msg.sender === 'user' ? styles.userMsg : styles.aiMsg
-                            }
-                        >
-                            {msg.sender === 'ai' ? (
-                                <ReactMarkdown
-                                    remarkPlugins={[remarkGfm]}
-                                    rehypePlugins={[rehypeHighlight]}
+            <div className={styles.wrapper}>
+                <aside className={styles.sidebar}>
+                    <h2 className={styles.sidebarTitle}>My Chats</h2>
+                    {sessions.length === 0 ? (
+                        <p className={styles.emptySidebar}>No chats yet</p>
+                    ) : (
+                        <ul className={styles.sessionList}>
+                            {sessions.map((s) => (
+                                <li
+                                    key={s.chatSessionId}
+                                    className={`${styles.sessionItem} ${
+                                        selectedSession?.chatSessionId === s.chatSessionId
+                                            ? styles.active
+                                            : ''
+                                    }`}
+                                    onClick={() => setSelectedSession(s)}
                                 >
-                                    {msg.text}
-                                </ReactMarkdown>
-                            ) : (
-                                msg.text
-                            )}
-                        </div>
-                    ))}
-                    <div ref={chatEndRef} />
-                </div>
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <input
-                        className={styles.input}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type your message..."
-                    />
-                    <button className={styles.button}>Send</button>
-                </form>
+                                    <span>{s.title}</span>
+                                    <small>{new Date(s.created).toLocaleDateString()}</small>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </aside>
+
+                <main className={styles.chatContainer}>
+                    <div className={styles.chatBox}>
+                        {messages.length > 0 ? (
+                            messages.map((msg) => (
+                                <div
+                                    key={msg.messageId}
+                                    className={
+                                        msg.sender === 'USER'
+                                            ? styles.userMsg
+                                            : styles.aiMsg
+                                    }
+                                >
+                                    <ReactMarkdown>{msg.message}</ReactMarkdown>
+                                </div>
+                            ))
+                        ) : (
+                            <p className={styles.emptyState}>
+                                {sessions.length === 0
+                                    ? "You don’t have any chats yet. Type a message to start one!"
+                                    : "Select a chat session to start messaging."}
+                            </p>
+                        )}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    <form className={styles.form} onSubmit={handleSend}>
+                        <input
+                            className={styles.input}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Type your message..."
+                        />
+                        <button className={styles.button}>Send</button>
+                    </form>
+                </main>
             </div>
         </>
     );

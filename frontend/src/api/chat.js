@@ -1,24 +1,53 @@
-export async function sendChatMessage(message, accessToken) {
-    const response = await fetch('http://localhost:8080/api/v1/chat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ message })
-    });
+const BASE_URL = 'http://localhost:8080/api/v1/chat';
 
+async function handleResponse(response) {
     if (response.status === 403) {
+        // JWT expired or invalid
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         throw new Error('FORBIDDEN');
     }
 
     if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || 'Failed to fetch chat response');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Request failed');
     }
 
-    const data = await response.json();
-    return data.message;
+    return response.json();
+}
+
+export async function sendChatMessage(message, sessionId, accessToken) {
+    const response = await fetch(`${BASE_URL}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ message, chatSessionId: sessionId }),
+    });
+
+    const data = await handleResponse(response);
+    return data;
+}
+
+export async function getChatSessions(accessToken) {
+    const response = await fetch(`${BASE_URL}/sessions`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+        },
+    });
+
+    return handleResponse(response);
+}
+
+export async function getChatMessages(sessionId, accessToken) {
+    const response = await fetch(`${BASE_URL}/messages/${sessionId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+        },
+    });
+
+    return handleResponse(response);
 }
