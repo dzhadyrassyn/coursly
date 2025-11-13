@@ -74,20 +74,14 @@ class ChatServiceImplTest {
 
         dto1 =
                 new ChatMessageResponse(
-                        100L,
-                        "Hello!",
-                        "USER",
-                        message1.getCreated(),
-                        message1.getLastModified(),
-                        42L);
+                        100L, "Hello!", "USER", message1.getCreated(), message1.getLastModified());
         dto2 =
                 new ChatMessageResponse(
                         101L,
                         "Hi, how can I help?",
                         "AI",
                         message2.getCreated(),
-                        message2.getLastModified(),
-                        42L);
+                        message2.getLastModified());
     }
 
     @Test

@@ -110,8 +110,7 @@ class ChatControllerTest {
                         "Hi",
                         "USER",
                         Instant.parse("2025-11-03T10:00:00Z"),
-                        Instant.parse("2025-11-03T10:00:01Z"),
-                        sessionId);
+                        Instant.parse("2025-11-03T10:00:01Z"));
 
         ChatMessageResponse msg2 =
                 new ChatMessageResponse(
@@ -119,8 +118,7 @@ class ChatControllerTest {
                         "Hello there!",
                         "AI",
                         Instant.parse("2025-11-03T10:00:02Z"),
-                        Instant.parse("2025-11-03T10:00:03Z"),
-                        sessionId);
+                        Instant.parse("2025-11-03T10:00:03Z"));
 
         when(chatService.retrieveUserChatSessionMessages(sessionId))
                 .thenReturn(List.of(msg1, msg2));
@@ -134,11 +132,9 @@ class ChatControllerTest {
                 .andExpect(jsonPath("$[0].messageId").value(101L))
                 .andExpect(jsonPath("$[0].message").value("Hi"))
                 .andExpect(jsonPath("$[0].sender").value("USER"))
-                .andExpect(jsonPath("$[0].chatSessionId").value(sessionId))
                 .andExpect(jsonPath("$[1].messageId").value(102L))
                 .andExpect(jsonPath("$[1].message").value("Hello there!"))
-                .andExpect(jsonPath("$[1].sender").value("AI"))
-                .andExpect(jsonPath("$[1].chatSessionId").value(sessionId));
+                .andExpect(jsonPath("$[1].sender").value("AI"));
     }
 
     @Test

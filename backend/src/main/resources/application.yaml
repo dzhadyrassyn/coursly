@@ -17,7 +17,7 @@ spring:
 
 jwt:
   secret: "3WQJcHo6Dz0Zx5XRK4pA09pUPN2oWWK1FC3O8p7DbWw1fE8PoD"
-  accessTokenExpirationMs: 900000 #15 minutes
+  accessTokenExpirationMs: 3600000 #1 hour
   refreshTokenExpirationMs: 604800000 # 7 days
 
 cors:
