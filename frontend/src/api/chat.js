@@ -42,7 +42,7 @@ export async function getChatSessions(accessToken) {
 }
 
 export async function getChatMessages(sessionId, accessToken) {
-    const response = await fetch(`${BASE_URL}/messages/${sessionId}`, {
+    const response = await fetch(`${BASE_URL}/sessions/${sessionId}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${accessToken}`,
