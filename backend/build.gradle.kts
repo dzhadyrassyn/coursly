@@ -39,7 +39,7 @@ configure<SpotlessExtension> {
 val mapstructVersion by extra("1.5.5.Final")
 val lombokMapStructBinding by extra("0.2.0")
 val jwtVersion by extra("0.11.5")
-val openAPIVersion by extra("2.2.0")
+val openAPIVersion by extra("2.8.14")
 val genaiVersion by extra("1.0.0")
 val httpclientVersion by extra("4.5.13")
 val postgresTestContainerVersion by extra("1.20.1")
