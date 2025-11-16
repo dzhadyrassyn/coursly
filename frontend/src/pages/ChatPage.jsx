@@ -14,6 +14,11 @@ export default function ChatPage() {
     const navigate = useNavigate();
     const accessToken = localStorage.getItem('accessToken');
 
+    const handleNewChat = () => {
+        setSelectedSession(null);
+        setMessages([]);
+    };
+
     // Load chat sessions
     useEffect(() => {
         async function fetchSessions() {
@@ -56,42 +61,47 @@ export default function ChatPage() {
         e.preventDefault();
         if (!input.trim()) return;
 
+        const currentInput = input;
+        setInput("");
+
         const userMessage = {
             messageId: Date.now(),
-            message: input,
-            sender: 'USER',
+            message: currentInput,
+            sender: "USER",
         };
         setMessages((prev) => [...prev, userMessage]);
-        setInput('');
 
         try {
-            // Create or continue chat session
             const sessionId = selectedSession?.chatSessionId ?? null;
-            const response = await sendChatMessage(input, sessionId, accessToken);
 
-            // Update session list if new one created
+            const response = await sendChatMessage(currentInput, sessionId, accessToken);
+
             if (!selectedSession) {
-                const updatedSessions = await getChatSessions(accessToken);
-                setSessions(updatedSessions);
-                const newSession = updatedSessions.find(
-                    (s) => s.chatSessionId === response.chatSessionId
-                );
+                const newSession = {
+                    chatSessionId: response.chatSessionId,
+                    title: currentInput,
+                    created: response.created,
+                };
+
+                setSessions((prev) => [...prev, newSession]);
                 setSelectedSession(newSession);
             }
 
+            // Add AI message from backend
             const aiMessage = {
-                messageId: Date.now() + 1,
+                messageId: response.messageId ?? Date.now() + 1,
                 message: response.message,
-                sender: 'AI',
+                sender: "AI",
             };
+
             setMessages((prev) => [...prev, aiMessage]);
         } catch (err) {
-            if (err.message === 'FORBIDDEN') {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                navigate('/');
+            if (err.message === "FORBIDDEN") {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                navigate("/");
             } else {
-                console.error('Error sending message:', err);
+                console.error("Error sending message:", err);
             }
         }
     };
@@ -102,26 +112,26 @@ export default function ChatPage() {
             <div className={styles.wrapper}>
                 <aside className={styles.sidebar}>
                     <h2 className={styles.sidebarTitle}>My Chats</h2>
-                    {sessions.length === 0 ? (
-                        <p className={styles.emptySidebar}>No chats yet</p>
-                    ) : (
-                        <ul className={styles.sessionList}>
-                            {sessions.map((s) => (
-                                <li
-                                    key={s.chatSessionId}
-                                    className={`${styles.sessionItem} ${
-                                        selectedSession?.chatSessionId === s.chatSessionId
-                                            ? styles.active
-                                            : ''
-                                    }`}
-                                    onClick={() => setSelectedSession(s)}
-                                >
-                                    <span>{s.title}</span>
-                                    <small>{new Date(s.created).toLocaleDateString()}</small>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <button className={styles.newChatBtn} onClick={handleNewChat}>
+                        + New Chat
+                    </button>
+                    <ul className={styles.sessionList}>
+                        {sessions.map((s) => (
+                            <li
+                                key={s.chatSessionId}
+                                className={`${styles.sessionItem} ${
+                                    selectedSession?.chatSessionId === s.chatSessionId
+                                        ? styles.active
+                                        : ''
+                                }`}
+                                onClick={() => setSelectedSession(s)}
+                            >
+                                <span>{s.title}</span>
+                                <small>{new Date(s.created).toLocaleDateString()}</small>
+                            </li>
+                        ))}
+                    </ul>
+
                 </aside>
 
                 <main className={styles.chatContainer}>
