@@ -1,0 +1,8 @@
+package edu.coursly.app.model.dto;
+
+import java.util.List;
+
+public record ChatContent(
+        String role,
+        List<ChatPart> parts
+) { }

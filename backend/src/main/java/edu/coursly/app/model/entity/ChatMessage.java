@@ -1,5 +1,6 @@
-package edu.coursly.app.model;
+package edu.coursly.app.model.entity;
 
+import edu.coursly.app.model.enums.MessageSenderType;
 import jakarta.persistence.*;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
@@ -14,15 +15,18 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "chat_session")
-public class ChatSession {
+@Table(name = "chat_message")
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
-    private String title;
+    @Column(name = "content", nullable = false, columnDefinition = "jsonb")
+    private String contentJson;
+
+    @Enumerated(EnumType.STRING)
+    private MessageSenderType sender;
 
     @Column(name = "created")
     @CreationTimestamp
@@ -33,6 +37,6 @@ public class ChatSession {
     private Instant lastModified;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "chat_session_id", nullable = false, referencedColumnName = "id")
+    private ChatSession chatSession;
 }

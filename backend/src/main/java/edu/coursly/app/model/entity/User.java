@@ -1,4 +1,4 @@
-package edu.coursly.app.model;
+package edu.coursly.app.model.entity;
 
 import edu.coursly.app.model.enums.Role;
 import jakarta.persistence.*;
