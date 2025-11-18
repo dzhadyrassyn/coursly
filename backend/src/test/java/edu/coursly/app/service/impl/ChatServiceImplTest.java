@@ -1,18 +1,22 @@
 package edu.coursly.app.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+import com.google.genai.types.Content;
 import edu.coursly.app.dto.ChatMessageResponse;
 import edu.coursly.app.dto.ChatRequest;
 import edu.coursly.app.dto.ChatResponse;
 import edu.coursly.app.dto.ChatSessionResponse;
 import edu.coursly.app.mapper.ChatMessageMapper;
 import edu.coursly.app.mapper.ChatSessionMapper;
-import edu.coursly.app.model.ChatMessage;
-import edu.coursly.app.model.ChatSession;
-import edu.coursly.app.model.User;
+import edu.coursly.app.mapper.GeminiContentMapper;
+import edu.coursly.app.model.dto.ChatContent;
+import edu.coursly.app.model.dto.TextPart;
+import edu.coursly.app.model.entity.ChatMessage;
+import edu.coursly.app.model.entity.ChatSession;
+import edu.coursly.app.model.entity.User;
 import edu.coursly.app.model.enums.MessageSenderType;
 import edu.coursly.app.service.AIService;
 import edu.coursly.app.service.ChatMessageService;
@@ -37,6 +41,7 @@ class ChatServiceImplTest {
     @Mock private UserService userService;
     @Mock private ChatSessionMapper chatSessionMapper;
     @Mock private ChatMessageMapper chatMessageMapper;
+    @Mock private GeminiContentMapper geminiContentMapper;
 
     @InjectMocks private ChatServiceImpl chatService;
 
@@ -44,8 +49,6 @@ class ChatServiceImplTest {
     private ChatSession chatSession;
     private ChatMessage message1;
     private ChatMessage message2;
-    private ChatMessageResponse dto1;
-    private ChatMessageResponse dto2;
 
     @BeforeEach
     void setUp() {
@@ -55,7 +58,7 @@ class ChatServiceImplTest {
         message1 =
                 ChatMessage.builder()
                         .id(100L)
-                        .content("Hello!")
+                        .contentJson("{\"role\":\"user\",\"parts\":[{\"text\":\"Hello!\"}]}")
                         .sender(MessageSenderType.USER)
                         .chatSession(chatSession)
                         .created(Instant.parse("2025-11-03T10:00:00Z"))
@@ -65,23 +68,13 @@ class ChatServiceImplTest {
         message2 =
                 ChatMessage.builder()
                         .id(101L)
-                        .content("Hi, how can I help?")
-                        .sender(MessageSenderType.AI)
+                        .contentJson(
+                                "{\"role\":\"model\",\"parts\":[{\"text\":\"Hi, how can I help?\"}]}")
+                        .sender(MessageSenderType.MODEL)
                         .chatSession(chatSession)
                         .created(Instant.parse("2025-11-03T10:00:02Z"))
                         .lastModified(Instant.parse("2025-11-03T10:00:03Z"))
                         .build();
-
-        dto1 =
-                new ChatMessageResponse(
-                        100L, "Hello!", "USER", message1.getCreated(), message1.getLastModified());
-        dto2 =
-                new ChatMessageResponse(
-                        101L,
-                        "Hi, how can I help?",
-                        "AI",
-                        message2.getCreated(),
-                        message2.getLastModified());
     }
 
     @Test
@@ -89,9 +82,24 @@ class ChatServiceImplTest {
     void sendMessage_success() {
         // given
         ChatRequest chatRequest = new ChatRequest("Hello AI!", 42L);
+
         when(userService.getCurrentUser()).thenReturn(user);
         when(chatSessionService.getOrCreate(chatRequest, user)).thenReturn(chatSession);
-        when(aiService.sendMessage("Hello AI!")).thenReturn("Hi human!");
+
+        ChatContent content1 = new ChatContent("user", List.of(new TextPart("Hello!")));
+        ChatContent content2 =
+                new ChatContent("model", List.of(new TextPart("Hi, how can I help?")));
+
+        when(chatMessageService.retrieveLast10Messages(42L))
+                .thenReturn(List.of(content1, content2));
+
+        Content geminiContent1 = Content.builder().build();
+        Content geminiContent2 = Content.builder().build();
+        when(geminiContentMapper.toGeminiContent(content1)).thenReturn(geminiContent1);
+        when(geminiContentMapper.toGeminiContent(content2)).thenReturn(geminiContent2);
+
+        when(aiService.sendChatConversation(List.of(geminiContent1, geminiContent2)))
+                .thenReturn("Hi human!");
 
         // when
         ChatResponse response = chatService.sendMessage(chatRequest);
@@ -101,10 +109,21 @@ class ChatServiceImplTest {
         assertThat(response.message()).isEqualTo("Hi human!");
         assertThat(response.chatSessionId()).isEqualTo(42L);
 
+        verify(userService).getCurrentUser();
+        verify(chatSessionService).getOrCreate(chatRequest, user);
         verify(chatMessageService).saveUserMessage("Hello AI!", chatSession);
+        verify(chatMessageService).retrieveLast10Messages(42L);
+        verify(geminiContentMapper).toGeminiContent(content1);
+        verify(geminiContentMapper).toGeminiContent(content2);
+        verify(aiService).sendChatConversation(List.of(geminiContent1, geminiContent2));
         verify(chatMessageService).saveAIMessage("Hi human!", chatSession);
-        verify(aiService).sendMessage("Hello AI!");
-        verifyNoMoreInteractions(chatMessageService, aiService);
+
+        verifyNoMoreInteractions(
+                userService,
+                chatSessionService,
+                chatMessageService,
+                aiService,
+                geminiContentMapper);
     }
 
     @Test
@@ -137,7 +156,8 @@ class ChatServiceImplTest {
         ChatRequest req = new ChatRequest("Hi", null);
         when(userService.getCurrentUser()).thenReturn(user);
         when(chatSessionService.getOrCreate(req, user)).thenReturn(chatSession);
-        when(aiService.sendMessage("Hi")).thenThrow(new RuntimeException("AI down"));
+
+        when(aiService.sendChatConversation(anyList())).thenThrow(new RuntimeException("AI down"));
 
         assertThatThrownBy(() -> chatService.sendMessage(req))
                 .isInstanceOf(RuntimeException.class)
@@ -151,8 +171,23 @@ class ChatServiceImplTest {
         when(userService.getCurrentUser()).thenReturn(user);
         when(chatMessageService.retrieveMessages(42L, user))
                 .thenReturn(List.of(message1, message2));
-        when(chatMessageMapper.toDto(message1)).thenReturn(dto1);
-        when(chatMessageMapper.toDto(message2)).thenReturn(dto2);
+
+        ChatMessageResponse chatMessageResponse1 =
+                new ChatMessageResponse(
+                        message1.getId(),
+                        message1.getContentJson(),
+                        message1.getSender().name(),
+                        message1.getCreated(),
+                        message1.getLastModified());
+        when(chatMessageMapper.toDto(message1)).thenReturn(chatMessageResponse1);
+        ChatMessageResponse chatMessageResponse2 =
+                new ChatMessageResponse(
+                        message2.getId(),
+                        message2.getContentJson(),
+                        message2.getSender().name(),
+                        message2.getCreated(),
+                        message2.getLastModified());
+        when(chatMessageMapper.toDto(message2)).thenReturn(chatMessageResponse2);
 
         // when
         List<ChatMessageResponse> result = chatService.retrieveUserChatSessionMessages(42L);
@@ -160,8 +195,8 @@ class ChatServiceImplTest {
         // then
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).messageId()).isEqualTo(100L);
-        assertThat(result.get(0).message()).isEqualTo("Hello!");
-        assertThat(result.get(1).sender()).isEqualTo("AI");
+        assertThat(result.get(0).message()).isEqualTo(message1.getContentJson());
+        assertThat(result.get(1).sender()).isEqualTo("MODEL");
 
         verify(userService).getCurrentUser();
         verify(chatMessageService).retrieveMessages(42L, user);

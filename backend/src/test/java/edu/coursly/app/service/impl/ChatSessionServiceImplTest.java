@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import edu.coursly.app.dto.ChatRequest;
-import edu.coursly.app.model.ChatSession;
-import edu.coursly.app.model.User;
+import edu.coursly.app.model.entity.ChatSession;
+import edu.coursly.app.model.entity.User;
 import edu.coursly.app.repository.ChatSessionRepository;
 import java.util.List;
 import java.util.Objects;
