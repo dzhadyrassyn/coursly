@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class GeminiContentMapper {
 
-    public Content toGeminiContent(ChatContent chatContent, String role) {
+    public Content toGeminiContent(ChatContent chatContent) {
 
         List<Part> parts =
                 chatContent.parts().stream()
                         .map(textPart -> Part.fromText(textPart.text()))
                         .toList();
 
-        return Content.builder().role(role).parts(parts).build();
+        return Content.builder().role(chatContent.role()).parts(parts).build();
     }
 }

@@ -1,5 +1,6 @@
 package edu.coursly.app.service;
 
+import edu.coursly.app.model.dto.ChatContent;
 import edu.coursly.app.model.entity.ChatMessage;
 import edu.coursly.app.model.entity.ChatSession;
 import edu.coursly.app.model.entity.User;
@@ -13,5 +14,5 @@ public interface ChatMessageService {
 
     List<ChatMessage> retrieveMessages(Long chatSessionId, User user);
 
-    List<ChatMessage> retrieveLast10Messages(Long id);
+    List<ChatContent> retrieveLast10Messages(Long id);
 }

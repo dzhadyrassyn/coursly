@@ -5,12 +5,10 @@ import edu.coursly.app.dto.ChatMessageResponse;
 import edu.coursly.app.dto.ChatRequest;
 import edu.coursly.app.dto.ChatResponse;
 import edu.coursly.app.dto.ChatSessionResponse;
-import edu.coursly.app.mapper.ChatContentJsonMapper;
 import edu.coursly.app.mapper.ChatMessageMapper;
 import edu.coursly.app.mapper.ChatSessionMapper;
 import edu.coursly.app.mapper.GeminiContentMapper;
 import edu.coursly.app.model.dto.ChatContent;
-import edu.coursly.app.model.entity.ChatMessage;
 import edu.coursly.app.model.entity.ChatSession;
 import edu.coursly.app.model.entity.User;
 import edu.coursly.app.service.*;
@@ -29,7 +27,6 @@ public class ChatServiceImpl implements ChatService {
     private final UserService userService;
     private final ChatSessionMapper chatSessionMapper;
     private final ChatMessageMapper chatMessageMapper;
-    private final ChatContentJsonMapper chatContentJsonMapper;
     private final GeminiContentMapper geminiContentMapper;
 
     public ChatServiceImpl(
@@ -39,7 +36,6 @@ public class ChatServiceImpl implements ChatService {
             UserService userService,
             ChatSessionMapper chatSessionMapper,
             ChatMessageMapper chatMessageMapper,
-            ChatContentJsonMapper chatContentJsonMapper,
             GeminiContentMapper geminiContentMapper) {
         this.aiService = aiService;
         this.chatSessionService = chatSessionService;
@@ -47,7 +43,6 @@ public class ChatServiceImpl implements ChatService {
         this.userService = userService;
         this.chatSessionMapper = chatSessionMapper;
         this.chatMessageMapper = chatMessageMapper;
-        this.chatContentJsonMapper = chatContentJsonMapper;
         this.geminiContentMapper = geminiContentMapper;
     }
 
@@ -61,19 +56,11 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageService.saveUserMessage(chatRequest.message(), chatSession);
 
-        List<ChatMessage> last10Messages =
+        List<ChatContent> last10Messages =
                 chatMessageService.retrieveLast10Messages(chatSession.getId());
 
         List<Content> geminiMessages =
-                last10Messages.stream()
-                        .map(
-                                msg -> {
-                                    ChatContent chatContent =
-                                            chatContentJsonMapper.fromJson(msg.getContentJson());
-                                    return geminiContentMapper.toGeminiContent(
-                                            chatContent, msg.getSender().name());
-                                })
-                        .toList();
+                last10Messages.stream().map(geminiContentMapper::toGeminiContent).toList();
 
         String aiResponse = aiService.sendChatConversation(geminiMessages);
         chatMessageService.saveAIMessage(aiResponse, chatSession);

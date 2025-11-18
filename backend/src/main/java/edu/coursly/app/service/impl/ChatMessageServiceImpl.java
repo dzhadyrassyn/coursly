@@ -30,7 +30,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public void saveUserMessage(String content, ChatSession session) {
 
-        ChatContent chatContent = new ChatContent(List.of(new TextPart(content)));
+        ChatContent chatContent = new ChatContent("user", List.of(new TextPart(content)));
         ChatMessage message =
                 ChatMessage.builder()
                         .contentJson(chatContentJsonMapper.toJson(chatContent))
@@ -44,7 +44,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public void saveAIMessage(String content, ChatSession session) {
 
-        ChatContent chatContent = new ChatContent(List.of(new TextPart(content)));
+        ChatContent chatContent = new ChatContent("model", List.of(new TextPart(content)));
         ChatMessage message =
                 ChatMessage.builder()
                         .contentJson(chatContentJsonMapper.toJson(chatContent))
@@ -70,8 +70,12 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public List<ChatMessage> retrieveLast10Messages(Long chatSessionId) {
+    public List<ChatContent> retrieveLast10Messages(Long chatSessionId) {
 
-        return chatMessageRepository.findTop10ByChatSession_IdOrderByCreatedAsc(chatSessionId);
+        return chatMessageRepository
+                .findTop10ByChatSession_IdOrderByCreatedAsc(chatSessionId)
+                .stream()
+                .map(msg -> chatContentJsonMapper.fromJson(msg.getContentJson()))
+                .toList();
     }
 }
