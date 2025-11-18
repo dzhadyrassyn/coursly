@@ -1,8 +1,11 @@
 package edu.coursly.app.service.impl;
 
-import edu.coursly.app.model.ChatMessage;
-import edu.coursly.app.model.ChatSession;
-import edu.coursly.app.model.User;
+import edu.coursly.app.mapper.ChatContentJsonMapper;
+import edu.coursly.app.model.dto.ChatContent;
+import edu.coursly.app.model.dto.TextPart;
+import edu.coursly.app.model.entity.ChatMessage;
+import edu.coursly.app.model.entity.ChatSession;
+import edu.coursly.app.model.entity.User;
 import edu.coursly.app.model.enums.MessageSenderType;
 import edu.coursly.app.repository.ChatMessageRepository;
 import edu.coursly.app.service.ChatMessageService;
@@ -15,17 +18,22 @@ import org.springframework.stereotype.Service;
 public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatContentJsonMapper chatContentJsonMapper;
 
-    public ChatMessageServiceImpl(ChatMessageRepository chatMessageRepository) {
+    public ChatMessageServiceImpl(
+            ChatMessageRepository chatMessageRepository,
+            ChatContentJsonMapper chatContentJsonMapper) {
         this.chatMessageRepository = chatMessageRepository;
+        this.chatContentJsonMapper = chatContentJsonMapper;
     }
 
     @Override
     public void saveUserMessage(String content, ChatSession session) {
 
+        ChatContent chatContent = new ChatContent(List.of(new TextPart(content)));
         ChatMessage message =
                 ChatMessage.builder()
-                        .content(content)
+                        .contentJson(chatContentJsonMapper.toJson(chatContent))
                         .chatSession(session)
                         .sender(MessageSenderType.USER)
                         .build();
@@ -36,11 +44,12 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public void saveAIMessage(String content, ChatSession session) {
 
+        ChatContent chatContent = new ChatContent(List.of(new TextPart(content)));
         ChatMessage message =
                 ChatMessage.builder()
-                        .content(content)
+                        .contentJson(chatContentJsonMapper.toJson(chatContent))
                         .chatSession(session)
-                        .sender(MessageSenderType.AI)
+                        .sender(MessageSenderType.MODEL)
                         .build();
 
         chatMessageRepository.save(message);
@@ -58,5 +67,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         }
 
         return messages;
+    }
+
+    @Override
+    public List<ChatMessage> retrieveLast10Messages(Long chatSessionId) {
+
+        return chatMessageRepository.findTop10ByChatSession_IdOrderByCreatedAsc(chatSessionId);
     }
 }

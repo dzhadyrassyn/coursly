@@ -22,7 +22,7 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "content", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String contentJson;
 
     @Enumerated(EnumType.STRING)

@@ -1,7 +1,7 @@
 package edu.coursly.app.mapper;
 
 import edu.coursly.app.dto.ChatSessionResponse;
-import edu.coursly.app.model.ChatSession;
+import edu.coursly.app.model.entity.ChatSession;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

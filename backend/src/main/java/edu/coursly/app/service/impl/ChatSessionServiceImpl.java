@@ -1,8 +1,8 @@
 package edu.coursly.app.service.impl;
 
 import edu.coursly.app.dto.ChatRequest;
-import edu.coursly.app.model.ChatSession;
-import edu.coursly.app.model.User;
+import edu.coursly.app.model.entity.ChatSession;
+import edu.coursly.app.model.entity.User;
 import edu.coursly.app.repository.ChatSessionRepository;
 import edu.coursly.app.service.ChatSessionService;
 import java.util.List;

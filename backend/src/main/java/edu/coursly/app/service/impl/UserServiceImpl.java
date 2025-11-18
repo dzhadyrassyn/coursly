@@ -3,7 +3,7 @@ package edu.coursly.app.service.impl;
 import edu.coursly.app.dto.UserRegistrationRequest;
 import edu.coursly.app.exception.UserAlreadyExistsException;
 import edu.coursly.app.mapper.UserMapper;
-import edu.coursly.app.model.User;
+import edu.coursly.app.model.entity.User;
 import edu.coursly.app.model.enums.Role;
 import edu.coursly.app.repository.UserRepository;
 import edu.coursly.app.service.UserService;

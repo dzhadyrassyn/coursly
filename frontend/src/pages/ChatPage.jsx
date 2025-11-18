@@ -91,7 +91,7 @@ export default function ChatPage() {
             const aiMessage = {
                 messageId: response.messageId ?? Date.now() + 1,
                 message: response.message,
-                sender: "AI",
+                sender: "MODEL",
             };
 
             setMessages((prev) => [...prev, aiMessage]);
