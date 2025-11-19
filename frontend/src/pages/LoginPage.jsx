@@ -3,6 +3,7 @@ import { login } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/LoginPage.module.css';
 import { validateCredentials } from '../utils/validation';
+import Navbar from '../components/Navbar';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -29,31 +30,34 @@ export default function LoginPage() {
     };
 
     return (
-        <div className={styles.container}>
-            <h2 className={styles.title}>Login</h2>
-            <form className={styles.form} onSubmit={handleLogin}>
-                <input
-                    className={styles.input}
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                {errors.username && <p className={styles.error}>{errors.username}</p>}
+        <>
+            <Navbar />
+            <div className={styles.container}>
+                <h2 className={styles.title}>Login</h2>
+                <form className={styles.form} onSubmit={handleLogin}>
+                    <input
+                        className={styles.input}
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    {errors.username && <p className={styles.error}>{errors.username}</p>}
 
-                <input
-                    className={styles.input}
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                {errors.password && <p className={styles.error}>{errors.password}</p>}
+                    <input
+                        className={styles.input}
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {errors.password && <p className={styles.error}>{errors.password}</p>}
 
-                <button className={styles.button} type="submit">Login</button>
-            </form>
+                    <button className={styles.button} type="submit">Login</button>
+                </form>
 
-            {status && <p className={styles.status}>{status}</p>}
-        </div>
+                {status && <p className={styles.status}>{status}</p>}
+            </div>
+        </>
     );
 }
