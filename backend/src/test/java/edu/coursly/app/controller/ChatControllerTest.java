@@ -42,7 +42,7 @@ class ChatControllerTest {
     @DisplayName("Should return chat response when request is valid")
     void shouldReturnChatResponse() throws Exception {
         ChatRequest request = new ChatRequest("Hello, AI!", null);
-        ChatResponse response = new ChatResponse("Echo: Hello, AI!", null);
+        ChatResponse response = new ChatResponse("Echo: Hello, AI!", null, Instant.now());
 
         when(chatService.sendMessage(request)).thenReturn(response);
 

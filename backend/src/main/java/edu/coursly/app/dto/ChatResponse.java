@@ -1,3 +1,5 @@
 package edu.coursly.app.dto;
 
-public record ChatResponse(String message, Long chatSessionId) {}
+import java.time.Instant;
+
+public record ChatResponse(String message, Long chatSessionId, Instant created) {}

@@ -65,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
         String aiResponse = aiService.sendChatConversation(geminiMessages);
         chatMessageService.saveAIMessage(aiResponse, chatSession);
 
-        return new ChatResponse(aiResponse, chatSession.getId());
+        return new ChatResponse(aiResponse, chatSession.getId(), chatSession.getCreated());
     }
 
     @Override
