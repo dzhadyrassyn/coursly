@@ -3,6 +3,9 @@ package edu.coursly.app.model.entity;
 import edu.coursly.app.model.enums.Role;
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,4 +39,13 @@ public class User {
     @Column(name = "last_modified")
     @UpdateTimestamp
     private Instant lastModified;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_course",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    @ToString.Exclude
+    private Set<Course> courses = new HashSet<>();
 }
