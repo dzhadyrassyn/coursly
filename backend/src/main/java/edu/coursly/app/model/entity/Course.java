@@ -3,7 +3,9 @@ package edu.coursly.app.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -27,4 +29,8 @@ public class Course {
     @ManyToMany(mappedBy = "courses")
     @ToString.Exclude
     private Set<User> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Section> sections = new ArrayList<>();
 }
