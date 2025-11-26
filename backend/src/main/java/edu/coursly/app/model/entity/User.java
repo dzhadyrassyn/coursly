@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -44,8 +43,7 @@ public class User {
     @JoinTable(
             name = "user_course",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
     @ToString.Exclude
     private Set<Course> courses = new HashSet<>();
 }
