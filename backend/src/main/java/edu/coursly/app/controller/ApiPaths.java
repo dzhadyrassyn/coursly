@@ -14,4 +14,6 @@ public final class ApiPaths {
     public static final String API_V1_CHAT = API_V1 + "/chat";
     public static final String API_V1_CHAT_SESSIONS = API_V1_CHAT + "/sessions";
     public static final String API_V1_CHAT_MESSAGES = API_V1_CHAT + "/sessions/{id}";
+
+    public static final String API_V1_COURSES = API_V1 + "/courses";
 }
