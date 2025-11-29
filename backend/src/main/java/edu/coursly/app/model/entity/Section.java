@@ -1,10 +1,13 @@
 package edu.coursly.app.model.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Data
@@ -20,6 +23,14 @@ public class Section {
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+
+    @Column(name = "created")
+    @CreationTimestamp
+    private Instant created;
+
+    @Column(name = "last_modified")
+    @UpdateTimestamp
+    private Instant lastModified;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "course_id", nullable = false)

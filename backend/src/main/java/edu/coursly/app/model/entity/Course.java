@@ -1,11 +1,14 @@
 package edu.coursly.app.model.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Data
@@ -24,6 +27,14 @@ public class Course {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "created")
+    @CreationTimestamp
+    private Instant created;
+
+    @Column(name = "last_modified")
+    @UpdateTimestamp
+    private Instant lastModified;
 
     @ManyToMany(mappedBy = "courses")
     @ToString.Exclude
